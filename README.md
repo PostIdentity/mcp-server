@@ -16,7 +16,7 @@ Official MCP server for [PostIdentity](https://postidentity.com) - Generate AI-p
 
 ## Demo
 
-[![PostIdentity MCP Demo](https://img.youtube.com/vi/lrqwAnX3B_Y/maxresdefault.jpg)](https://youtube.com/shorts/lrqwAnX3B_Y?feature=share)
+[![Watch Demo](https://img.shields.io/badge/▶️-Watch_Demo-red?style=for-the-badge)](https://api.postidentity.com/storage/v1/object/public/videos/quick%20demonstration.mp4)
 
 *Click to watch: See PostIdentity MCP in action*
 
