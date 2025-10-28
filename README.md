@@ -12,6 +12,12 @@ Official MCP server for [PostIdentity](https://postidentity.com) - Generate AI-p
 - 🛍️ **Browse Marketplace** - Discover identity templates
 - 🔒 **Secure** - Token-based authentication with RLS protection
 
+## Demo
+
+[![PostIdentity MCP Demo](https://img.youtube.com/vi/lrqwAnX3B_Y/maxresdefault.jpg)](https://youtube.com/shorts/lrqwAnX3B_Y?feature=share)
+
+*Click to watch: See PostIdentity MCP in action*
+
 ## Prerequisites
 
 - Node.js 18+ (for local development)
