@@ -1,15 +1,51 @@
 import { getUserId, getAccessToken, SUPABASE_URL, SUPABASE_ANON_KEY } from '../auth.js';
 
-export async function listPosts(profileId?: string, limit: number = 10): Promise<string> {
+export async function listPosts(profileIdOrName?: string, limit: number = 10): Promise<string> {
   try {
     const userId = getUserId();
     const accessToken = getAccessToken();
 
+    let resolvedProfileId: string | undefined = profileIdOrName;
+
+    // If profileIdOrName is provided, check if it's a UUID or name
+    if (profileIdOrName) {
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(profileIdOrName);
+      
+      // If not a UUID, treat it as a name and look it up
+      if (!isUUID) {
+        const lookupResponse = await fetch(
+          `${SUPABASE_URL}/rest/v1/profiles?user_id=eq.${userId}&name=ilike.${encodeURIComponent(profileIdOrName)}&status=eq.active&select=id,name`,
+          {
+            headers: {
+              'apikey': SUPABASE_ANON_KEY,
+              'Authorization': `Bearer ${accessToken}`,
+            },
+          }
+        );
+        
+        if (!lookupResponse.ok) {
+          throw new Error(`Failed to lookup identity: HTTP ${lookupResponse.status}`);
+        }
+        
+        const lookupProfiles = await lookupResponse.json() as Array<{ id: string; name: string }>;
+        
+        if (!lookupProfiles || lookupProfiles.length === 0) {
+          return `❌ Identity "${profileIdOrName}" not found.\n\nTip: Use list_identities to see your available identities.`;
+        }
+        
+        if (lookupProfiles.length > 1) {
+          return `❌ Multiple identities found with name "${profileIdOrName}".\n\nPlease use the identity UUID instead. Use list_identities to see all identities with their IDs.`;
+        }
+        
+        resolvedProfileId = lookupProfiles[0].id;
+      }
+    }
+
     // Build query with optional profile filter
     let url = `${SUPABASE_URL}/rest/v1/posts?user_id=eq.${userId}&select=id,content,profile_id,original_prompt,created_at,profiles(name)&order=created_at.desc&limit=${limit}`;
     
-    if (profileId) {
-      url += `&profile_id=eq.${profileId}`;
+    if (resolvedProfileId) {
+      url += `&profile_id=eq.${resolvedProfileId}`;
     }
 
     const response = await fetch(url, {

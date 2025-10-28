@@ -1,8 +1,21 @@
 import { getUserId, getAccessToken, SUPABASE_URL, SUPABASE_ANON_KEY } from '../auth.js';
 
+type StyleAdjustment = 'more_casual' | 'more_formal' | 'add_humor' | 'more_serious' | 'more_direct' | 'add_emojis';
+type RefinementType = 'regenerate' | 'shorter' | 'longer' | 'style_adjust' | 'refine';
+
+interface RefinementOptions {
+  type: RefinementType;
+  sessionId: string;
+  previousPost?: string;
+  styleAdjustment?: StyleAdjustment;
+  customFeedback?: string;
+}
+
 export async function generatePost(
   identityIdOrName: string,
-  thoughtContent: string
+  thoughtContent: string,
+  characterLimit?: number,
+  refinement?: RefinementOptions
 ): Promise<string> {
   try {
     const userId = getUserId();
@@ -77,6 +90,15 @@ export async function generatePost(
         body: JSON.stringify({
           thoughtContent,
           profileJson,
+          characterLimit: characterLimit || null,
+          iteration: refinement ? {
+            type: refinement.type,
+            sessionId: refinement.sessionId,
+            freeRefinementsUsed: 999, // Always charge for MCP refinements (bypass free refinement check)
+            ...(refinement.previousPost && { previousPost: refinement.previousPost }),
+            ...(refinement.styleAdjustment && { styleAdjustment: refinement.styleAdjustment }),
+            ...(refinement.customFeedback && { customFeedback: refinement.customFeedback }),
+          } : undefined,
         }),
       }
     );

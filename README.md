@@ -6,6 +6,8 @@ Official MCP server for [PostIdentity](https://postidentity.com) - Generate AI-p
 
 - 🎭 **Manage Identities** - List, create, and archive your writing personas
 - ✍️ **Generate Posts** - Transform thoughts into posts instantly
+- 🔄 **Refine Posts** - Regenerate, shorten, lengthen, or adjust style (1 credit per refinement)
+- 📐 **Character Limits** - Generate posts for Twitter, LinkedIn, or custom lengths
 - 📝 **Review Posts** - Browse your post history on specific identities
 - 💳 **Check Credits** - Monitor your credit balance
 - 🎁 **Track Referrals** - View your referral stats and code
@@ -66,18 +68,25 @@ Get your writing identities.
 ```
 
 ### 2. `generate_post`
-Transform a thought into a post using an identity's style.
+Transform a thought into a post using an identity's style. Supports refinement options.
 
 **Parameters:**
 - `identity_id` (required): Identity UUID or name (e.g., "Tech Blogger")
 - `thought_content` (required): Your thought/idea
+- `character_limit` (optional): Max character count (e.g., 280 for Twitter/X)
+- `refinement_type` (optional): "regenerate", "shorter", "longer", "style_adjust", or "refine"
+- `session_id` (required for refinements): Random UUID for the refinement session
+- `previous_post` (required for refinements): The post to refine
+- `style_adjustment` (for "style_adjust"): "more_casual", "more_formal", "add_humor", "more_serious", "more_direct", "add_emojis"
+- `custom_feedback` (for "refine"): Your specific feedback
 
-**Example:**
+**Examples:**
 ```
 "Generate a post as Tech Blogger about AI trends"
+"Generate a Twitter post (280 chars) as Tech Blogger about AI trends"
 ```
 
-**Cost:** 1 credit per generation
+**Cost:** 1 credit per generation or refinement
 
 ### 3. `get_credits`
 Check your current credit balance.
@@ -91,12 +100,13 @@ Check your current credit balance.
 Browse your generated posts.
 
 **Parameters:**
-- `profile_id` (optional): Filter by identity
+- `profile_id` (optional): Filter by identity UUID or name (e.g., "Tech Blogger")
 - `limit` (optional): Number of posts (default: 10)
 
-**Example:**
+**Examples:**
 ```
 "Show me my last 5 posts"
+"Show me posts from Tech Blogger"
 ```
 
 ### 5. `get_referral_stats`
@@ -163,6 +173,17 @@ AI: "✅ Post generated successfully!
      It's about ensuring predictable behavior TODAY.
      
      💳 Remaining credits: 45"
+```
+
+### Refine a Post
+```
+You: "Make that post shorter" (with refinement parameters)
+AI: "✅ Post generated successfully!
+     
+     AI safety is about predictable behavior TODAY,
+     not sci-fi scenarios.
+     
+     💳 Remaining credits: 44"  (1 credit charged)
 ```
 
 ### Check Credits
@@ -233,10 +254,29 @@ Buy credits at [postidentity.com/credits](https://postidentity.com/credits)
 
 - **Free Trial:** 5 credits on signup
 - **Generation:** 1 credit per post
+- **Refinements:** 1 credit per refinement
 - **Referrals:** 5 credits per referral (for both users)
 - **Pricing:** Starting at $5 for 15 credits
 
 [Buy credits →](https://postidentity.com/credits)
+
+## Refinement Features
+
+Refine your generated posts with these options:
+
+- **regenerate**: Generate a completely new version
+- **shorter**: Reduce length by ~40% while keeping the message
+- **longer**: Add more detail and context
+- **style_adjust**: Apply a single predefined tone change (more casual, formal, humor, etc.)
+- **refine**: Apply any custom feedback, mixed instructions, or specific edits
+
+**How It Works:** Your AI assistant automatically chooses the right refinement type based on your natural language request:
+- "Make it shorter" → `shorter`
+- "Add more humor" → `style_adjust: add_humor`
+- "Make it more direct and remove em dashes" → `refine` (custom feedback for mixed instructions)
+- "Try again" → `regenerate`
+
+**Note:** In the MCP server, all refinements cost 1 credit. The web app at [postidentity.com](https://postidentity.com) offers the first 3 refinements free per session.
 
 ## Links
 

@@ -37,7 +37,7 @@ await initializeClient(accessToken);
 const server = new Server(
   {
     name: 'PostIdentity',
-    version: '1.1.1',
+    version: '1.8.0',
   },
   {
     capabilities: {
@@ -67,7 +67,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: 'generate_post',
-        description: 'Generate a social media post as one of your identities. Costs 1 credit per generation.',
+        description: 'Generate a social media post as one of your identities. Costs 1 credit per generation or refinement.',
         inputSchema: {
           type: 'object',
           properties: {
@@ -78,6 +78,32 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             thought_content: {
               type: 'string',
               description: 'The content/thought you want to transform into a post (e.g., "I think AI will revolutionize education")',
+            },
+            character_limit: {
+              type: 'number',
+              description: 'Optional: Maximum character count for the generated post (e.g., 280 for Twitter/X, 300 for LinkedIn)',
+            },
+            refinement_type: {
+              type: 'string',
+              description: 'Optional: Type of refinement. Choose based on request: "regenerate" (complete rewrite), "shorter" (reduce length ~40%), "longer" (add more detail), "style_adjust" (ONLY for single predefined tone changes like "more casual"), "refine" (for ALL other feedback including mixed changes, specific edits, or custom instructions)',
+              enum: ['regenerate', 'shorter', 'longer', 'style_adjust', 'refine'],
+            },
+            session_id: {
+              type: 'string',
+              description: 'Required for refinements: Unique session ID (generate a random UUID)',
+            },
+            previous_post: {
+              type: 'string',
+              description: 'Required for refinements: The post to refine',
+            },
+            style_adjustment: {
+              type: 'string',
+              description: 'Required ONLY when refinement_type is "style_adjust". Use ONLY for single, simple tone changes. Choose one: "more_casual", "more_formal", "add_humor", "more_serious", "more_direct", "add_emojis"',
+              enum: ['more_casual', 'more_formal', 'add_humor', 'more_serious', 'more_direct', 'add_emojis'],
+            },
+            custom_feedback: {
+              type: 'string',
+              description: 'Required when refinement_type is "refine". Use for ANY specific instructions, mixed changes, or detailed feedback (e.g., "make it more direct and remove em dashes", "add statistics", "change the opening sentence"). This is the most flexible option.',
             },
           },
           required: ['identity_id', 'thought_content'],
@@ -100,7 +126,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           properties: {
             profile_id: {
               type: 'string',
-              description: 'Optional: Filter posts by a specific identity ID',
+              description: 'Optional: Filter posts by a specific identity - can be either the UUID or the identity name (e.g., "Tech Blogger")',
             },
             limit: {
               type: 'number',
@@ -206,7 +232,45 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           throw new Error('thought_content is required and must be a string');
         }
 
-        const result = await generatePost(args.identity_id, args.thought_content);
+        const characterLimit = args.character_limit && typeof args.character_limit === 'number' 
+          ? args.character_limit 
+          : undefined;
+
+        // Build refinement options if refinement_type is provided
+        let refinement: any = undefined;
+        if (args.refinement_type && typeof args.refinement_type === 'string') {
+          if (!args.session_id || typeof args.session_id !== 'string') {
+            throw new Error('session_id is required when using refinement');
+          }
+          if (!args.previous_post || typeof args.previous_post !== 'string') {
+            throw new Error('previous_post is required when using refinement');
+          }
+
+          refinement = {
+            type: args.refinement_type as 'regenerate' | 'shorter' | 'longer' | 'style_adjust' | 'refine',
+            sessionId: args.session_id,
+            freeRefinementsUsed: 999, // Always charge for MCP refinements (set high to bypass free refinement check)
+            previousPost: args.previous_post,
+          };
+
+          if (args.style_adjustment && typeof args.style_adjustment === 'string') {
+            refinement.styleAdjustment = args.style_adjustment as 'more_casual' | 'more_formal' | 'add_humor' | 'more_serious' | 'more_direct' | 'add_emojis';
+          }
+          
+          if (args.custom_feedback && typeof args.custom_feedback === 'string') {
+            refinement.customFeedback = args.custom_feedback;
+          }
+
+          // Validate specific requirements
+          if (args.refinement_type === 'style_adjust' && !args.style_adjustment) {
+            throw new Error('style_adjustment is required when refinement_type is "style_adjust"');
+          }
+          if (args.refinement_type === 'refine' && !args.custom_feedback) {
+            throw new Error('custom_feedback is required when refinement_type is "refine"');
+          }
+        }
+
+        const result = await generatePost(args.identity_id, args.thought_content, characterLimit, refinement);
         return {
           content: [
             {
