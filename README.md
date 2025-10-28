@@ -46,12 +46,17 @@ Official MCP server for [PostIdentity](https://postidentity.com) - Generate AI-p
 
 ## Available Tools
 
-### 1. `list_identities`
-Get all your active writing identities.
+### 1. `list_identities` 
+Get your writing identities.
 
-**Example:**
+**Parameters:**
+- `status` (optional): Filter by "active" (default), "archived", or "all"
+
+**Examples:**
 ```
 "Show me my PostIdentity identities"
+"Show me my archived identities"
+"Show me all my identities"
 ```
 
 ### 2. `generate_post`

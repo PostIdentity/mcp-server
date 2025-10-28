@@ -22,7 +22,7 @@ const args = process.argv.slice(2);
 const accessTokenIndex = args.indexOf('--access-token');
 
 if (accessTokenIndex === -1 || !args[accessTokenIndex + 1]) {
-  console.error('❌ Post Identity MCP Server requires an access token.');
+  console.error('❌ PostIdentity MCP Server requires an access token.');
   console.error('Usage: --access-token <your-token>');
   console.error('Get your token from: https://postidentity.com/settings (Developers section)');
   process.exit(1);
@@ -52,10 +52,16 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     tools: [
       {
         name: 'list_identities',
-        description: 'Get a list of all your active identities/personas from Post Identity',
+        description: 'Get a list of your identities/personas from PostIdentity',
         inputSchema: {
           type: 'object',
-          properties: {},
+          properties: {
+            status: {
+              type: 'string',
+              description: 'Filter by status: "active" (default), "archived", or "all"',
+              enum: ['active', 'archived', 'all'],
+            },
+          },
           required: [],
         },
       },
@@ -177,7 +183,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     switch (name) {
       case 'list_identities': {
-        const result = await listIdentities();
+        const status = args && typeof args.status === 'string' 
+          ? (args.status as 'active' | 'archived' | 'all')
+          : 'active';
+        
+        const result = await listIdentities(status);
         return {
           content: [
             {
@@ -321,7 +331,7 @@ async function main() {
   await server.connect(transport);
   
   // Log to stderr (stdout is reserved for MCP protocol)
-  console.error('Post Identity MCP Server running...');
+  console.error('PostIdentity MCP Server running...');
 }
 
 main().catch((error) => {
