@@ -8,11 +8,11 @@ export async function listIdentities(status: 'active' | 'archived' | 'all' = 'ac
     // Build filter based on status
     let filter = `user_id=eq.${userId}`;
     if (status === 'active') {
-      filter += '&archived_at=is.null';
+      filter += '&status=eq.active';
     } else if (status === 'archived') {
-      filter += '&archived_at=not.is.null';
+      filter += '&status=eq.archived';
     }
-    // 'all' = no archived_at filter
+    // 'all' = no status filter
 
     // Make direct fetch call with auth header for RLS
     const response = await fetch(

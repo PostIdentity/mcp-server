@@ -16,7 +16,7 @@ export async function generatePost(
     // If not a UUID, treat it as a name and look it up
     if (!isUUID) {
       const lookupResponse = await fetch(
-        `${SUPABASE_URL}/rest/v1/profiles?user_id=eq.${userId}&name=ilike.${encodeURIComponent(identityIdOrName)}&archived_at=is.null&select=id,name`,
+        `${SUPABASE_URL}/rest/v1/profiles?user_id=eq.${userId}&name=ilike.${encodeURIComponent(identityIdOrName)}&status=eq.active&select=id,name`,
         {
           headers: {
             'apikey': SUPABASE_ANON_KEY,
