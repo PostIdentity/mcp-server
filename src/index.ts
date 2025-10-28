@@ -67,7 +67,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           properties: {
             identity_id: {
               type: 'string',
-              description: 'The UUID of the identity to generate the post as (use list_identities to see available IDs)',
+              description: 'The identity to use - can be either the UUID or the identity name (e.g., "Tech Blogger"). Use list_identities to see available identities.',
             },
             thought_content: {
               type: 'string',
@@ -160,7 +160,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           properties: {
             identity_id: {
               type: 'string',
-              description: 'The UUID of the identity to archive',
+              description: 'The identity to archive - can be either the UUID or the identity name (e.g., "Tech Blogger")',
             },
           },
           required: ['identity_id'],

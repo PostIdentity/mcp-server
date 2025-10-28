@@ -58,12 +58,12 @@ Get all your active writing identities.
 Transform a thought into a post using an identity's style.
 
 **Parameters:**
-- `identity_id` (required): ID of the identity
+- `identity_id` (required): Identity UUID or name (e.g., "Tech Blogger")
 - `thought_content` (required): Your thought/idea
 
 **Example:**
 ```
-"Generate a post as [identity] about AI trends"
+"Generate a post as Tech Blogger about AI trends"
 ```
 
 **Cost:** 1 credit per generation
@@ -124,11 +124,11 @@ Create a new identity from examples.
 Archive an identity (can be restored later).
 
 **Parameters:**
-- `identity_id` (required): ID of identity to archive
+- `identity_id` (required): Identity UUID or name to archive
 
 **Example:**
 ```
-"Archive my test identity"
+"Archive my Tech Blogger identity"
 ```
 
 ## Usage Examples
