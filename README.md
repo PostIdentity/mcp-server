@@ -26,16 +26,40 @@ Official MCP server for [PostIdentity](https://postidentity.com) - Generate AI-p
 - A [PostIdentity](https://postidentity.com) account
 - An MCP-compatible AI assistant (Windsurf, Claude Desktop, etc.)
 
+## 🚨 v2.0 Migration Notice
+
+**If you're upgrading from v1.x:** Access tokens still work, but we strongly recommend switching to API keys for permanent access. Access tokens expire hourly and require manual updates.
+
 ## Quick Start
 
-### 1. Get Your Access Token
+### 1. Get Your API Key (Recommended)
 
 1. Go to [postidentity.com/settings](https://postidentity.com/settings)
-2. Expand the **"Developers"** section
-3. Copy your **Access Token**
+2. Open the **"Developers"** section
+3. Click **"Create Key"**
+4. Give it a name (e.g., "Windsurf MCP")
+5. **Copy the key immediately** - you won't see it again!
 
 ### 2. Configure Your MCP Client
 
+**Recommended (v2.0+):**
+```json
+{
+  "mcpServers": {
+    "postidentity": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@postidentity/mcp-server@latest",
+        "--api-key",
+        "your_api_key_here"
+      ]
+    }
+  }
+}
+```
+
+**Legacy (still supported):**
 ```json
 {
   "mcpServers": {
@@ -51,6 +75,7 @@ Official MCP server for [PostIdentity](https://postidentity.com) - Generate AI-p
   }
 }
 ```
+⚠️ **Note:** Access tokens expire every hour and need manual renewal. Use API keys for permanent access.
 
 ## Available Tools
 

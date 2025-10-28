@@ -15,29 +15,43 @@ import { getReferralStats } from './tools/get-referral-stats.js';
 import { listMarketplaceTemplates } from './tools/list-marketplace-templates.js';
 import { createIdentity } from './tools/create-identity.js';
 import { archiveIdentity } from './tools/archive-identity.js';
-import { initializeClient } from './auth.js';
+import { initializeClient, refreshIfNeeded } from './auth.js';
 
-// Get access token from CLI arguments
+// Get credential from CLI arguments (API key or access token)
 const args = process.argv.slice(2);
+const apiKeyIndex = args.indexOf('--api-key');
 const accessTokenIndex = args.indexOf('--access-token');
 
-if (accessTokenIndex === -1 || !args[accessTokenIndex + 1]) {
-  console.error('❌ PostIdentity MCP Server requires an access token.');
-  console.error('Usage: --access-token <your-token>');
-  console.error('Get your token from: https://postidentity.com/settings (Developers section)');
+let credential: string | null = null;
+
+if (apiKeyIndex !== -1 && args[apiKeyIndex + 1]) {
+  credential = args[apiKeyIndex + 1];
+} else if (accessTokenIndex !== -1 && args[accessTokenIndex + 1]) {
+  credential = args[accessTokenIndex + 1];
+}
+
+if (!credential) {
+  console.error('❌ PostIdentity MCP Server requires authentication.');
+  console.error('');
+  console.error('Usage (recommended):');
+  console.error('  --api-key <your-api-key>');
+  console.error('');
+  console.error('Usage (legacy):');
+  console.error('  --access-token <your-token>');
+  console.error('');
+  console.error('📖 Get your API key from: https://postidentity.com/settings (Developers section)');
+  console.error('');
   process.exit(1);
 }
 
-const accessToken = args[accessTokenIndex + 1];
-
-// Initialize client with access token
-await initializeClient(accessToken);
+// Initialize client with credential (API key or access token)
+await initializeClient(credential);
 
 // Create MCP server
 const server = new Server(
   {
     name: 'PostIdentity',
-    version: '1.8.0',
+    version: '2.0.0',
   },
   {
     capabilities: {
@@ -204,6 +218,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 
 // Handle tool calls
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
+  // Refresh JWT if needed (for API key users)
+  await refreshIfNeeded();
+  
   const { name, arguments: args } = request.params;
 
   try {
