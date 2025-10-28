@@ -1,0 +1,38 @@
+{
+  "name": "@postidentity/mcp-server",
+  "version": "1.2.0",
+  "description": "MCP server for postidentity - Generate AI posts from any AI assistant",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "postidentity-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "postidentity",
+    "ai",
+    "social-media"
+  ],
+  "author": "postidentity",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "@supabase/supabase-js": "^2.39.0",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "@types/prompts": "^2.4.9",
+    "typescript": "^5.3.3"
+  }
+}
