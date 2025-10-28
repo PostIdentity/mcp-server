@@ -1,217 +1,247 @@
-# Post Identity MCP Server
+# PostIdentity MCP Server
 
-Generate AI-powered social media posts from any AI assistant that supports the Model Context Protocol (MCP), including Claude Desktop, Windsurf, and more.
+Official MCP server for [PostIdentity](https://postidentity.com) - Generate AI-powered social media posts from any AI assistant that supports the Model Context Protocol (MCP).
 
 ## Features
 
-- 🎭 **Access all your identities** - List and use any of your Post Identity personas
-- ✍️ **Generate posts instantly** - Create posts without opening the web app
-- 💳 **Check credits** - Monitor your credit balance
-- 🔒 **Secure** - Uses your existing Post Identity account credentials
-- 🔄 **Auto token refresh** - Seamless authentication
+- 🎭 **Manage Identities** - List, create, and archive your writing personas
+- ✍️ **Generate Posts** - Transform thoughts into posts instantly
+- 📝 **Review Posts** - Browse your post history on specific identities
+- 💳 **Check Credits** - Monitor your credit balance
+- 🎁 **Track Referrals** - View your referral stats and code
+- 🛍️ **Browse Marketplace** - Discover identity templates
+- 🔒 **Secure** - Token-based authentication with RLS protection
 
 ## Prerequisites
 
-- Node.js 18+ installed
-- A [Post Identity](https://postidentity.com) account
-- An MCP-compatible AI assistant (Claude Desktop, etc.)
+- Node.js 18+ (for local development)
+- A [PostIdentity](https://postidentity.com) account
+- An MCP-compatible AI assistant (Windsurf, Claude Desktop, etc.)
 
-## Installation
+## Quick Start
 
-### Option 1: From npm (Recommended)
+### 1. Get Your Access Token
 
-```bash
-npm install -g @post-identity/mcp-server
-```
+1. Go to [postidentity.com/settings](https://postidentity.com/settings)
+2. Expand the **"Developers"** section
+3. Copy your **Access Token**
 
-### Option 2: From source
-
-```bash
-cd mcp-server
-npm install
-npm run build
-npm link
-```
-
-## Setup
-
-### 1. Configure your credentials
-
-```bash
-post-identity-mcp setup
-```
-
-You'll be prompted for:
-- Your Post Identity email
-- Your password
-
-The configuration is saved securely to `~/.post-identity/config.json` (mode 0600).
-
-### 2. Add to Claude Desktop
-
-Add this to your Claude Desktop configuration file:
-
-**macOS/Linux:** `~/.config/Claude/claude_desktop_config.json`  
-**Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+### 2. Configure Your MCP Client
 
 ```json
 {
   "mcpServers": {
-    "post-identity": {
+    "postidentity": {
       "command": "npx",
-      "args": ["-y", "@post-identity/mcp-server"]
+      "args": [
+        "-y",
+        "@postidentity/mcp-server@latest",
+        "--access-token",
+        "YOUR_ACCESS_TOKEN_HERE"
+      ]
     }
   }
 }
-```
-
-Or if installed globally:
-
-```json
-{
-  "mcpServers": {
-    "post-identity": {
-      "command": "post-identity-mcp"
-    }
-  }
-}
-```
-
-### 3. Restart Claude Desktop
-
-Close and reopen Claude Desktop to load the MCP server.
-
-## Usage
-
-Once configured, you can use these commands in Claude:
-
-### List your identities
-
-```
-List my Post Identity personas
-```
-
-### Generate a post
-
-```
-Generate a post as Quantum Dragon about AI trends
-```
-
-### Check credit balance
-
-```
-How many Post Identity credits do I have?
 ```
 
 ## Available Tools
 
-### `list_identities`
-Get a list of all your active identities/personas.
+### 1. `list_identities`
+Get all your active writing identities.
 
 **Example:**
 ```
-You: "Show me my Post Identity identities"
-Claude: [calls list_identities]
-Claude: "You have 3 identities:
-1. Quantum Dragon
-   ID: abc123...
-   Bio: Tech thought leader focusing on AI...
-..."
+"Show me my PostIdentity identities"
 ```
 
-### `generate_post`
-Generate a social media post as one of your identities.
+### 2. `generate_post`
+Transform a thought into a post using an identity's style.
 
 **Parameters:**
-- `identity_id` (required): The UUID of the identity
-- `custom_prompt` (optional): Custom prompt to guide generation
+- `identity_id` (required): ID of the identity
+- `thought_content` (required): Your thought/idea
 
 **Example:**
 ```
-You: "Generate a post as Quantum Dragon about AI safety"
-Claude: [calls generate_post]
-Claude: "✅ Post generated successfully!
-
-──────────────────────────────────────────────────
-AI safety isn't just about preventing sci-fi scenarios.
-It's about ensuring systems behave predictably TODAY.
-...
-──────────────────────────────────────────────────
-
-💳 Remaining credits: 24"
+"Generate a post as [identity] about AI trends"
 ```
 
-### `get_credits`
+**Cost:** 1 credit per generation
+
+### 3. `get_credits`
 Check your current credit balance.
 
 **Example:**
 ```
-You: "Check my Post Identity credits"
-Claude: [calls get_credits]
-Claude: "💳 Current Balance: 24 credits
-
-✅ You can generate 24 more posts"
+"How many PostIdentity credits do I have?"
 ```
 
-## Commands
+### 4. `list_posts`
+Browse your generated posts.
 
-### Setup
+**Parameters:**
+- `profile_id` (optional): Filter by identity
+- `limit` (optional): Number of posts (default: 10)
+
+**Example:**
+```
+"Show me my last 5 posts"
+```
+
+### 5. `get_referral_stats`
+View your referral code and stats.
+
+**Example:**
+```
+"What's my PostIdentity referral code?"
+```
+
+### 6. `list_marketplace_templates`
+Browse identity templates in the marketplace.
+
+**Parameters:**
+- `category` (optional): Filter by business/creative/personal
+
+**Example:**
+```
+"Show me business identity templates"
+```
+
+### 7. `create_identity`
+Create a new identity from examples.
+
+**Parameters:**
+- `name` (required): Identity name
+- `description` (required): Writing style description
+- `examples` (required): Array of 3+ example posts (more = better accuracy)
+
+**Example:**
+```
+"Create a tech blogger identity with these examples: ..."
+```
+
+### 8. `archive_identity`
+Archive an identity (can be restored later).
+
+**Parameters:**
+- `identity_id` (required): ID of identity to archive
+
+**Example:**
+```
+"Archive my test identity"
+```
+
+## Usage Examples
+
+### List Your Identities
+```
+You: "List my PostIdentity identities"
+AI: "Found 2 identities:
+     1. Tech Thought Leader
+        ID: abc123...
+     2. Casual Developer
+        ID: def456..."
+```
+
+### Generate a Post
+```
+You: "Generate a post as Tech Thought Leader about AI safety"
+AI: "✅ Post generated successfully!
+     
+     AI safety isn't about preventing sci-fi scenarios.
+     It's about ensuring predictable behavior TODAY.
+     
+     💳 Remaining credits: 45"
+```
+
+### Check Credits
+```
+You: "How many credits do I have?"
+AI: "💳 Current Balance: 45 credits
+     ✅ You can generate 45 more posts"
+```
+
+### View Referral Stats
+```
+You: "What's my referral code?"
+AI: "🎁 Referral Stats
+     📋 Your Code: ABC123XY
+     👥 Total Referrals: 3
+     💰 Credits Earned: 15"
+```
+
+## Local Development
+
 ```bash
-post-identity-mcp setup
+# Clone the repository
+git clone https://github.com/PostIdentity/mcp-server.git
+cd mcp-server
+
+# Install dependencies
+npm install
+
+# Build
+npm run build
+
+# Run locally
+node dist/index.js --access-token YOUR_TOKEN
 ```
-Configure with your Post Identity credentials.
-
-### Logout
-```bash
-post-identity-mcp logout
-```
-Remove stored configuration.
-
-### Help
-```bash
-post-identity-mcp help
-```
-Show usage information.
-
-## Troubleshooting
-
-### "Configuration not found" error
-Run `post-identity-mcp setup` to configure your credentials.
-
-### "Session expired" error
-Your session token has expired. Run `post-identity-mcp setup` again to re-authenticate.
-
-### Tools not appearing in Claude Desktop
-1. Verify the configuration file syntax is correct (valid JSON)
-2. Ensure the path to the executable is correct
-3. Restart Claude Desktop completely
-4. Check Claude Desktop logs (Help → View Logs)
-
-### "Insufficient credits" error
-You've run out of credits. Buy more at [postidentity.com/credits](https://postidentity.com/credits).
 
 ## Security
 
-- Credentials are stored locally in `~/.post-identity/config.json` with restricted permissions (mode 0600)
-- No passwords are stored - only session tokens
-- Tokens are automatically refreshed before expiration
-- Same security model as the Post Identity web app
-- All API calls use HTTPS
+✅ **Token-based authentication** - No passwords stored  
+✅ **Row Level Security (RLS)** - Database-level access control  
+✅ **User isolation** - Can only access your own data  
+✅ **Credit system** - Natural rate limiting  
+✅ **Audit trail** - All transactions logged  
+
+## Troubleshooting
+
+### Tools Not Appearing
+1. Verify JSON syntax in config file
+2. Check token is correct and not expired
+3. Restart your AI assistant completely
+4. Check logs for errors
+
+### Authentication Errors
+1. Get fresh token from [postidentity.com/settings](https://postidentity.com/settings)
+2. Update your MCP config with new token
+3. Restart AI assistant
+
+### "Insufficient Credits" Error
+Buy credits at [postidentity.com/credits](https://postidentity.com/credits)
 
 ## How It Works
 
-1. You authenticate once with email/password
-2. The server stores your session token locally
-3. When called via MCP, it uses your token to call Post Identity's API
-4. Tokens are automatically refreshed as needed
-5. Your existing credits and RLS policies apply
+1. You provide your access token in the MCP config
+2. Server authenticates using token on startup
+3. Token is used for all API requests to PostIdentity
+4. All operations respect your credits and RLS policies
 
-## Support
+## Credits & Pricing
 
-- **Issues:** [GitHub Issues](https://github.com/your-repo/post-identity/issues)
-- **Web App:** [postidentity.com](https://postidentity.com)
-- **Email:** support@postidentity.com
+- **Free Trial:** 5 credits on signup
+- **Generation:** 1 credit per post
+- **Referrals:** 5 credits per referral (for both users)
+- **Pricing:** Starting at $5 for 15 credits
+
+[Buy credits →](https://postidentity.com/credits)
+
+## Links
+
+- 🌐 **Web App:** [postidentity.com](https://postidentity.com)
+- 📦 **npm Package:** [@postidentity/mcp-server](https://www.npmjs.com/package/@postidentity/mcp-server)
+- 🐛 **Issues:** [GitHub Issues](https://github.com/PostIdentity/mcp-server/issues)
+- 📧 **Support:** support@postidentity.com
+
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a PR.
 
 ## License
 
-MIT
+MIT © PostIdentity
+
+---
+
+**Made with ❤️ by the PostIdentity team**
