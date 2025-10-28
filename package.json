@@ -1,6 +1,6 @@
 {
   "name": "@postidentity/mcp-server",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "MCP server for postidentity - Generate AI posts from any AI assistant",
   "type": "module",
   "main": "dist/index.js",
