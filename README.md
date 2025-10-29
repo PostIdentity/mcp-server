@@ -20,7 +20,36 @@ Official MCP server for [PostIdentity](https://postidentity.com) - Generate AI-p
 
 *Click to watch: See PostIdentity MCP in action*
 
-## Prerequisites
+## Two Deployment Options
+
+### 🖥️ Local MCP Server (This Package)
+For **local AI assistants** like Windsurf, Claude Desktop, and other MCP-compatible tools.
+
+- **Transport:** stdio (stdin/stdout)
+- **Installation:** `npx @postidentity/mcp-server`
+- **Best for:** Desktop AI assistants
+
+### ☁️ HTTP MCP Server
+For **cloud-based integrations** like Gumloop and other HTTP-based MCP clients.
+
+- **Endpoint:** `https://api.postidentity.com/functions/v1/mcp-http`
+- **Transport:** HTTP with JSON-RPC 2.0
+- **Authentication:** `X-API-Key` header
+- **Best for:** Cloud platforms, custom integrations
+
+**Example usage:**
+```bash
+curl -X POST https://api.postidentity.com/functions/v1/mcp-http \
+  -H "X-API-Key: pi_xxxxxxxxxxxxx" \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+```
+
+Both servers provide **identical functionality** and **identical output** - just different transport mechanisms.
+
+---
+
+## Prerequisites (Local Server)
 
 - Node.js 18+ (for local development)
 - A [PostIdentity](https://postidentity.com) account
