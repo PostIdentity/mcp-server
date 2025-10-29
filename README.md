@@ -42,6 +42,7 @@ For **cloud-based integrations** like Gumloop and other HTTP-based MCP clients.
 curl -X POST https://api.postidentity.com/functions/v1/mcp-http \
   -H "X-API-Key: pi_xxxxxxxxxxxxx" \
   -H "Content-Type: application/json" \
+  -H "Accept: text/event-stream" \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
 ```
 
