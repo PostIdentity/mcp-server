@@ -119,6 +119,33 @@ export async function generatePost(
       throw new Error('No post generated');
     }
 
+    // Save the generated post to the database
+    const saveResponse = await fetch(
+      `${SUPABASE_URL}/rest/v1/posts`,
+      {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal',
+        },
+        body: JSON.stringify({
+          user_id: userId,
+          profile_id: identityId,
+          content: result.generatedPost,
+          original_prompt: thoughtContent,
+          status: 'published'
+        }),
+      }
+    );
+
+    if (!saveResponse.ok) {
+      // Log error but don't fail - post was already generated and credit deducted
+      console.error(`Warning: Failed to save post to database: HTTP ${saveResponse.status}`);
+      console.error(await saveResponse.text().catch(() => 'Could not read error'));
+    }
+
     let output = '✅ Post generated successfully!\n\n';
     output += '─'.repeat(50) + '\n';
     output += result.generatedPost + '\n';

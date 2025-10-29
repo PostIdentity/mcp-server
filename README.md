@@ -32,14 +32,14 @@ For **local AI assistants** like Windsurf, Claude Desktop, and other MCP-compati
 ### ☁️ HTTP MCP Server
 For **cloud-based integrations** like Gumloop and other HTTP-based MCP clients.
 
-- **Endpoint:** `https://api.postidentity.com/functions/v1/mcp-http`
+- **Endpoint:** `https://api.postidentity.com/functions/v1/mcp`
 - **Transport:** HTTP with JSON-RPC 2.0
 - **Authentication:** `X-API-Key` header
 - **Best for:** Cloud platforms, custom integrations
 
 **Example usage:**
 ```bash
-curl -X POST https://api.postidentity.com/functions/v1/mcp-http \
+curl -X POST https://api.postidentity.com/functions/v1/mcp \
   -H "X-API-Key: pi_xxxxxxxxxxxxx" \
   -H "Content-Type: application/json" \
   -H "Accept: text/event-stream" \
