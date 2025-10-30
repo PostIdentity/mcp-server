@@ -94,7 +94,7 @@ export async function generatePost(
           iteration: refinement ? {
             type: refinement.type,
             sessionId: refinement.sessionId,
-            freeRefinementsUsed: 999, // Always charge for MCP refinements (bypass free refinement check)
+            // NOTE: freeRefinementsUsed removed - server verifies from database instead
             ...(refinement.previousPost && { previousPost: refinement.previousPost }),
             ...(refinement.styleAdjustment && { styleAdjustment: refinement.styleAdjustment }),
             ...(refinement.customFeedback && { customFeedback: refinement.customFeedback }),
@@ -119,6 +119,9 @@ export async function generatePost(
       throw new Error('No post generated');
     }
 
+    // Generate session ID if this is a new post (not a refinement)
+    const sessionId = refinement?.sessionId || `mcp_${identityId}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
     // Save the generated post to the database
     const saveResponse = await fetch(
       `${SUPABASE_URL}/rest/v1/posts`,
@@ -135,7 +138,8 @@ export async function generatePost(
           profile_id: identityId,
           content: result.generatedPost,
           original_prompt: thoughtContent,
-          status: 'published'
+          status: 'published',
+          session_id: sessionId  // SECURITY: Required for server-side refinement verification
         }),
       }
     );
