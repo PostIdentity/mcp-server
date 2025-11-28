@@ -9,6 +9,8 @@ import {
 
 import { listIdentities } from './tools/list-identities.js';
 import { generatePost } from './tools/generate-post.js';
+import { generateThread } from './tools/generate-thread.js';
+import { generateReply } from './tools/generate-reply.js';
 import { getCredits } from './tools/get-credits.js';
 import { listPosts } from './tools/list-posts.js';
 import { getReferralStats } from './tools/get-referral-stats.js';
@@ -212,6 +214,63 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           required: ['identity_id'],
         },
       },
+      {
+        name: 'generate_thread',
+        description: 'Generate a cohesive thread (multiple connected posts) from one thought. Perfect for breaking down complex ideas, stories, or long-form content like YouTube transcripts into a series of posts. Costs 1 credit.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            identity_id: {
+              type: 'string',
+              description: 'The identity to use - can be either the UUID or the identity name (e.g., "Tech Blogger")',
+            },
+            thought_content: {
+              type: 'string',
+              description: 'The content/thought to transform into a thread. Can be long-form content like a YouTube transcript, article summary, or detailed explanation.',
+            },
+            post_count: {
+              type: ['number', 'string'],
+              description: 'Number of posts in thread: a number between 3-10, or "auto" to let AI decide based on content length (default: "auto")',
+            },
+            platform: {
+              type: 'string',
+              description: 'Target platform for character limits: "twitter" (280 chars) or "linkedin" (500 chars). Default: "twitter"',
+              enum: ['twitter', 'linkedin'],
+            },
+            character_limit: {
+              type: 'number',
+              description: 'Optional: Override character limit per post (default: 280 for Twitter, 500 for LinkedIn)',
+            },
+          },
+          required: ['identity_id', 'thought_content'],
+        },
+      },
+      {
+        name: 'generate_reply',
+        description: 'Generate a reply to an existing post in your identity\'s voice. Perfect for engaging with other users\' content while maintaining your authentic style. Costs 1 credit.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            identity_id: {
+              type: 'string',
+              description: 'The identity to use - can be either the UUID or the identity name (e.g., "Tech Blogger")',
+            },
+            original_post: {
+              type: 'string',
+              description: 'The post you are replying to (copy the full text)',
+            },
+            reply_direction: {
+              type: 'string',
+              description: 'What you want to say in your reply - your key points, stance, or reaction to the original post',
+            },
+            character_limit: {
+              type: 'number',
+              description: 'Optional: Maximum character count (default: 280)',
+            },
+          },
+          required: ['identity_id', 'original_post', 'reply_direction'],
+        },
+      },
     ],
   };
 });
@@ -379,6 +438,66 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }
         
         const result = await archiveIdentity(args.identity_id);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: result,
+            },
+          ],
+        };
+      }
+
+      case 'generate_thread': {
+        if (!args || typeof args.identity_id !== 'string') {
+          throw new Error('identity_id is required and must be a string');
+        }
+        if (typeof args.thought_content !== 'string') {
+          throw new Error('thought_content is required and must be a string');
+        }
+
+        const postCount: number | 'auto' = typeof args.post_count === 'number' 
+          ? args.post_count 
+          : (args.post_count === 'auto' ? 'auto' : 'auto');
+        const platform = (args.platform as 'twitter' | 'linkedin') || 'twitter';
+        const characterLimit = typeof args.character_limit === 'number' ? args.character_limit : undefined;
+
+        const result = await generateThread(
+          args.identity_id,
+          args.thought_content,
+          postCount,
+          platform,
+          characterLimit
+        );
+        return {
+          content: [
+            {
+              type: 'text',
+              text: result,
+            },
+          ],
+        };
+      }
+
+      case 'generate_reply': {
+        if (!args || typeof args.identity_id !== 'string') {
+          throw new Error('identity_id is required and must be a string');
+        }
+        if (typeof args.original_post !== 'string') {
+          throw new Error('original_post is required and must be a string');
+        }
+        if (typeof args.reply_direction !== 'string') {
+          throw new Error('reply_direction is required and must be a string');
+        }
+
+        const characterLimit = typeof args.character_limit === 'number' ? args.character_limit : 280;
+
+        const result = await generateReply(
+          args.identity_id,
+          args.original_post,
+          args.reply_direction,
+          characterLimit
+        );
         return {
           content: [
             {

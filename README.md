@@ -6,6 +6,8 @@ Official MCP server for [PostIdentity](https://postidentity.com) - Generate AI-p
 
 - 🎭 **Manage Identities** - List, create, and archive your writing personas
 - ✍️ **Generate Posts** - Transform thoughts into posts instantly
+- 🧵 **Generate Threads** - Turn long-form content into cohesive multi-post threads
+- 💬 **Generate Replies** - Create authentic replies to other posts
 - 🔄 **Refine Posts** - Regenerate, shorten, lengthen, or adjust style (1 credit per refinement)
 - 📐 **Character Limits** - Generate posts for Twitter, LinkedIn, or custom lengths
 - 📝 **Review Posts** - Browse your post history on specific identities
@@ -207,6 +209,41 @@ Archive an identity (can be restored later).
 "Archive my Tech Blogger identity"
 ```
 
+### 9. `generate_thread`
+Generate a cohesive thread (multiple connected posts) from one thought. Perfect for breaking down YouTube transcripts, articles, or complex ideas into a series of posts.
+
+**Parameters:**
+- `identity_id` (required): Identity UUID or name
+- `thought_content` (required): Long-form content to transform (YouTube transcript, article, etc.)
+- `post_count` (optional): Number of posts (3-10) or "auto" (default: "auto")
+- `platform` (optional): "twitter" (280 chars) or "linkedin" (500 chars) - default: "twitter"
+- `character_limit` (optional): Override character limit per post
+
+**Examples:**
+```
+"Generate a Twitter thread as Tech Blogger about this YouTube transcript: [paste transcript]"
+"Create a 5-post LinkedIn thread as Tech Blogger about AI trends"
+```
+
+**Cost:** 1 credit per thread (regardless of number of posts)
+
+### 10. `generate_reply`
+Generate a reply to an existing post in your identity's voice. Perfect for engaging with other users' content authentically.
+
+**Parameters:**
+- `identity_id` (required): Identity UUID or name
+- `original_post` (required): The post you're replying to (full text)
+- `reply_direction` (required): Your intended points/reaction
+- `character_limit` (optional): Max characters (default: 280)
+
+**Examples:**
+```
+"Generate a reply as Tech Blogger to this post: [paste post]. Agree with them but add nuance about AI safety."
+"Reply as Tech Blogger: [original post]. Point out a flaw in their argument about productivity tools."
+```
+
+**Cost:** 1 credit per reply
+
 ## Usage Examples
 
 ### List Your Identities
@@ -255,6 +292,51 @@ AI: "🎁 Referral Stats
      📋 Your Code: ABC123XY
      👥 Total Referrals: 3
      💰 Credits Earned: 15"
+```
+
+### Generate a Thread from YouTube Transcript
+```
+You: "Generate a Twitter thread as Tech Blogger about this YouTube transcript:
+      [paste long transcript here]"
+AI: "✅ Thread generated successfully!
+     
+     📝 5 posts in thread
+     ──────────────────────────────────────────────────
+     
+     **Post 1/5** (276 chars)
+     [Hook: Attention-grabbing opening]
+     ──────────────────────────────
+     
+     **Post 2/5** (280 chars)
+     [Development: Key point 1]
+     ...
+     
+     **Post 5/5** (265 chars)
+     [Conclusion: Strong takeaway]
+     
+     💳 Remaining credits: 44
+     🆔 Thread ID: abc123..."
+```
+
+### Generate a Reply
+```
+You: "Reply to this post as Tech Blogger: 'AI will replace all programmers by 2030'
+      Disagree politely but firmly, emphasizing augmentation over replacement."
+AI: "✅ Reply generated successfully!
+     
+     📩 **Original post:**
+     AI will replace all programmers by 2030...
+     
+     💬 **Your reply:**
+     ──────────────────────────────────────────────────
+     Respectfully disagree. The last 20 years of 
+     automation didn't replace programmers—it made 
+     them 10x more productive. AI is a tool, not a 
+     replacement. The best devs will be those who 
+     master the tool.
+     ──────────────────────────────────────────────────
+     
+     💳 Remaining credits: 43"
 ```
 
 ## Local Development
