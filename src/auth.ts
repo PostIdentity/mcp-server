@@ -1,7 +1,7 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 // Export for use in tools
-export const SUPABASE_URL = 'https://api.postidentity.com';
+export const SUPABASE_URL = 'https://izonnqmeqgzmuowhglfx.supabase.co';
 export const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6b25ucW1lcWd6bXVvd2hnbGZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ0ODgxNjYsImV4cCI6MjA2MDA2NDE2Nn0.Vj0WoFg_t3FDvgiq2aLQFJj9RcmAmlvJ1ibzzWYvifc';
 
 let supabaseClient: SupabaseClient | null = null;
@@ -14,7 +14,7 @@ let jwtExpiry: number = 0;
  * Exchange API key for JWT by calling the validate-api-key edge function
  */
 async function exchangeApiKeyForJWT(key: string): Promise<{ jwt: string; expiresIn: number }> {
-  const response = await fetch('https://api.postidentity.com/functions/v1/validate-api-key', {
+  const response = await fetch('https://izonnqmeqgzmuowhglfx.supabase.co/functions/v1/validate-api-key', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

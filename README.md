@@ -18,7 +18,7 @@ Official MCP server for [PostIdentity](https://postidentity.com) - Generate AI-p
 
 ## Demo
 
-[![Watch Demo](https://img.shields.io/badge/▶️-Watch_Demo-red?style=for-the-badge)](https://api.postidentity.com/storage/v1/object/public/videos/quick%20demonstration.mp4)
+[![Watch Demo](https://img.shields.io/badge/▶️-Watch_Demo-red?style=for-the-badge)](https://izonnqmeqgzmuowhglfx.supabase.co/storage/v1/object/public/videos/quick%20demonstration.mp4)
 
 *Click to watch: See PostIdentity MCP in action*
 
@@ -34,14 +34,14 @@ For **local AI assistants** like Windsurf, Claude Desktop, and other MCP-compati
 ### ☁️ HTTP MCP Server
 For **cloud-based integrations** like Gumloop and other HTTP-based MCP clients.
 
-- **Endpoint:** `https://api.postidentity.com/functions/v1/mcp`
+- **Endpoint:** `https://izonnqmeqgzmuowhglfx.supabase.co/functions/v1/mcp`
 - **Transport:** HTTP with JSON-RPC 2.0
 - **Authentication:** `X-API-Key` header
 - **Best for:** Cloud platforms, custom integrations
 
 **Example usage:**
 ```bash
-curl -X POST https://api.postidentity.com/functions/v1/mcp \
+curl -X POST https://izonnqmeqgzmuowhglfx.supabase.co/functions/v1/mcp \
   -H "X-API-Key: pi_xxxxxxxxxxxxx" \
   -H "Content-Type: application/json" \
   -H "Accept: text/event-stream" \
